@@ -1,0 +1,92 @@
+1
+00:00:00,000 --> 00:00:04,000
+Bienvenue dans English SpeakApp : l'application pour parler anglais... pour de vrai !
+
+2
+00:00:04,000 --> 00:00:09,000
+L'écran d'accueil propose trois modes : conversation libre, cours d'anglais et mini-jeux.
+
+3
+00:00:09,000 --> 00:00:14,000
+Le profil : niveau, points d'expérience, série de jours et badges à débloquer.
+
+4
+00:00:14,000 --> 00:00:19,000
+En conversation libre, choisissez votre partenaire : chaque personnage a sa voix et son caractère.
+
+5
+00:00:19,000 --> 00:00:24,000
+Réglez votre niveau, puis choisissez le décor : restaurant, aéroport, entretien d'embauche...
+
+6
+00:00:24,000 --> 00:00:29,000
+Parlez en temps réel, à la voix, avec sous-titres en direct — comme un vrai appel.
+
+7
+00:00:29,000 --> 00:00:34,000
+À la fin, un bilan complet : note sur 10, points forts et axes d'amélioration.
+
+8
+00:00:34,000 --> 00:00:39,000
+Décrochez 9/10 ou plus, et un cadeau apparaît sur l'accueil : un invité surprise vous attend !
+
+9
+00:00:39,000 --> 00:00:44,000
+C'est Raj, le correspondant indien ! Une conversation bonus au pub — il disparaît après l'avoir rencontré.
+
+10
+00:00:44,000 --> 00:00:49,000
+Le mode Cours : de vrais professeurs qui suivent votre progression... et un surnom à gagner !
+
+11
+00:00:49,000 --> 00:00:54,000
+Choisissez le niveau et la durée : l'application reprend là où vous vous étiez arrêté.
+
+12
+00:00:54,000 --> 00:00:59,000
+Pendant la leçon, un chrono guide la séance ; vous validez quand l'objectif est atteint.
+
+13
+00:00:59,000 --> 00:01:04,000
+Chaque leçon est évaluée : note, acquis, vocabulaire du jour... et parfois un nouveau surnom.
+
+14
+00:01:04,000 --> 00:01:09,000
+Le tableau de bord résume tout : leçons validées, note moyenne et progression par cours.
+
+15
+00:01:09,000 --> 00:01:14,000
+Le test de niveau : 10 minutes avec David l'examinateur pour situer votre anglais.
+
+16
+00:01:14,000 --> 00:01:19,000
+Votre niveau s'affiche sur l'échelle officielle, du débutant au C2, avec un conseil pour la suite.
+
+17
+00:01:19,000 --> 00:01:24,000
+Côté détente : trois mini-jeux pour réviser en s'amusant.
+
+18
+00:01:24,000 --> 00:01:29,000
+Le quiz d'expressions américaines : combos, vies et explication à chaque question.
+
+19
+00:01:29,000 --> 00:01:34,000
+Répondez avant la fin du chrono : chaque bonne réponse fait grimper le combo !
+
+20
+00:01:34,000 --> 00:01:39,000
+Word Rush : 60 secondes de vocabulaire par thème — les combos rajoutent du temps.
+
+21
+00:01:39,000 --> 00:01:44,000
+Trouvez la bonne traduction le plus vite possible !
+
+22
+00:01:44,000 --> 00:01:49,000
+Le carnet d'erreurs fait revenir vos fautes au bon moment : c'est la répétition espacée.
+
+23
+00:01:49,000 --> 00:01:53,000
+À vous de jouer ! English SpeakApp — parlez anglais, pour de vrai.
+

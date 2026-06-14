@@ -1,0 +1,3 @@
+# Ce fichier garde le dossier data/ dans le dépôt.
+# Les données réelles (progress.json, quiz_history.json) sont ignorées par git
+# et recréées automatiquement au premier lancement.

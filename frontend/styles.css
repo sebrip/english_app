@@ -1,0 +1,835 @@
+/* =========================================================================
+ * styles.css — TOUTE L'APPARENCE DE L'APP
+ * -------------------------------------------------------------------------
+ * Organisation :
+ *   1. :root          -> les "variables" de couleurs/rayons réutilisées partout
+ *                        (change une couleur ici = tout le thème suit).
+ *   2. .bg-orbs       -> les halos flous animés en fond.
+ *   3. .screen        -> gestion de l'affichage d'un écran à la fois.
+ *   4. Puis une section par écran : HOME / SETUP / CALL / SUMMARY.
+ * Repère-toi aux bannières "/* HOME *​/", "/* SETUP *​/", etc.
+ * ========================================================================= */
+:root {
+  /* --- Palette : modifie ces valeurs pour reskin toute l'app --- */
+  --bg: #0a0c18;
+  --bg-soft: #12152a;
+  --card: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --text: #f2f3fb;
+  --muted: #9aa0bd;
+  --accent: #ff7a59;
+  --accent-2: #6c8bff;
+  --green: #3ddc84;
+  --radius: 20px;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* L'attribut hidden doit TOUJOURS l'emporter, même sur un display:flex de classe. */
+[hidden] { display: none !important; }
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: radial-gradient(1200px 800px at 70% -10%, #1b1f3b 0%, var(--bg) 55%);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* fond animé */
+.bg-orbs { position: fixed; inset: 0; z-index: 0; pointer-events: none; filter: blur(60px); opacity: 0.5; }
+.bg-orbs span { position: absolute; border-radius: 50%; }
+.bg-orbs span:nth-child(1) { width: 380px; height: 380px; background: #ff7a5955; top: -80px; left: -60px; }
+.bg-orbs span:nth-child(2) { width: 420px; height: 420px; background: #6c8bff55; bottom: -120px; right: -80px; }
+.bg-orbs span:nth-child(3) { width: 300px; height: 300px; background: #3ddc8433; top: 40%; left: 55%; }
+
+/* écrans */
+.screen { position: relative; z-index: 1; max-width: 980px; margin: 0 auto; padding: 48px 24px 80px; display: none; animation: fade .4s ease; }
+.screen.active { display: block; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* HOME */
+.hero { text-align: center; margin-bottom: 44px; }
+.logo { font-weight: 600; letter-spacing: .5px; color: var(--muted); margin-bottom: 28px; }
+.logo span { color: var(--accent); }
+.hero-title { font-family: "Fraunces", serif; font-size: clamp(34px, 6vw, 60px); line-height: 1.05; font-weight: 700; }
+.hero-title em { color: var(--accent); font-style: italic; }
+.hero-sub { color: var(--muted); margin-top: 16px; font-size: 18px; max-width: 560px; margin-inline: auto; }
+
+.section-label { text-transform: uppercase; letter-spacing: 2px; font-size: 12px; color: var(--muted); margin-bottom: 16px; font-weight: 600; }
+
+.char-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.char-card {
+  text-align: center; background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 28px 22px; cursor: pointer; color: var(--text);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  backdrop-filter: blur(10px);
+}
+.char-card:hover { transform: translateY(-6px); border-color: var(--accent); background: rgba(255,122,89,0.08); }
+.char-avatar img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; box-shadow: 0 8px 22px rgba(0,0,0,.35); }
+.char-name { font-family: "Fraunces", serif; font-size: 26px; font-weight: 700; margin-top: 12px; }
+.char-title { color: var(--accent-2); font-weight: 600; font-size: 14px; }
+.char-tagline { color: var(--muted); font-size: 14px; margin: 12px 0 18px; line-height: 1.5; }
+.char-cta { color: var(--accent); font-weight: 600; font-size: 14px; }
+
+.foot { text-align: center; color: var(--muted); font-size: 13px; margin-top: 48px; opacity: .7; }
+
+/* SETUP */
+.ghost-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; margin-bottom: 24px; }
+.ghost-btn:hover { color: var(--text); }
+.setup-head { display: flex; align-items: center; gap: 18px; margin-bottom: 36px; }
+.setup-avatar img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+.setup-head h2 { font-family: "Fraunces", serif; font-size: 30px; }
+
+.setup-block { margin-bottom: 32px; }
+.block-title { font-weight: 600; margin-bottom: 14px; font-size: 17px; }
+
+.pills { display: flex; gap: 12px; flex-wrap: wrap; }
+.pill {
+  background: var(--card); border: 1px solid var(--card-border); color: var(--text);
+  padding: 12px 22px; border-radius: 999px; cursor: pointer; font-size: 15px; font-weight: 500;
+  transition: all .15s ease;
+}
+.pill:hover { border-color: var(--accent-2); }
+.pill.selected { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
+
+.decor-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.decor-card {
+  position: relative; height: 150px; border-radius: 16px; border: 2px solid transparent;
+  background-size: cover; background-position: center; cursor: pointer; overflow: hidden;
+  display: flex; align-items: flex-end; padding: 16px; transition: transform .18s ease, border-color .18s ease;
+}
+.decor-card:hover { transform: translateY(-4px); }
+.decor-card.selected { border-color: var(--accent); }
+.decor-label { color: #fff; font-weight: 600; font-size: 16px; text-shadow: 0 2px 8px rgba(0,0,0,.6); }
+
+.primary-btn {
+  width: 100%; padding: 18px; border: none; border-radius: 16px; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), #ff9d59); color: #fff; font-size: 18px; font-weight: 600;
+  box-shadow: 0 12px 30px rgba(255,122,89,0.35); transition: transform .15s ease, opacity .15s ease;
+}
+.primary-btn:hover { transform: translateY(-2px); }
+.primary-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* CALL */
+.screen.call { max-width: none; min-height: 100vh; margin: 0; padding: 0; background-size: cover; background-position: center; display: none; flex-direction: column; }
+.screen.call.active { display: flex; }
+.call-topbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 28px; }
+.call-place { color: #fff; font-weight: 600; background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(8px); }
+.end-btn { background: rgba(255,59,59,0.9); border: none; color: #fff; padding: 10px 20px; border-radius: 999px; cursor: pointer; font-weight: 600; }
+.end-btn:hover { background: #ff2d2d; }
+
+.call-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 20px; }
+
+/* --level (0..1) est mis à jour ~60x/s par app.js depuis le volume réel de la voix.
+   Le CONTENEUR grossit avec la voix ; l'IMAGE "respire" et flotte en continu. */
+.avatar-ring {
+  --level: 0; width: 190px; height: 190px; border-radius: 50%;
+  display: grid; place-items: center; position: relative;
+  transform: scale(calc(1 + var(--level) * 0.12));
+  transition: transform .07s linear;
+}
+.avatar-ring img {
+  width: 158px; height: 158px; border-radius: 50%; object-fit: cover; /* la photo remplit le cercle */
+  position: relative; z-index: 2;
+  /* Respiration + flottement permanents (l'avatar est "vivant" même en silence). */
+  animation: breathe 3.6s ease-in-out infinite, floaty 5s ease-in-out infinite;
+  box-shadow: 0 12px 30px rgba(0,0,0,.45),
+              0 0 calc(6px + var(--level) * 55px) rgba(61, 220, 132, calc(var(--level) * 0.95));
+  transition: box-shadow .1s linear;
+}
+@keyframes breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@keyframes floaty  { 0%,100% { margin-top: 0; }       50% { margin-top: -7px; } }
+
+/* Halo dont l'intensité ET la taille suivent la voix. */
+.avatar-ring::before {
+  content: ""; position: absolute; inset: -8px; border-radius: 50%;
+  border: 3px solid var(--green);
+  opacity: calc(0.12 + var(--level) * 0.88);
+  transform: scale(calc(1 + var(--level) * 0.16));
+  transition: opacity .08s linear, transform .08s linear;
+}
+/* Onde qui se propage en continu quand l'IA parle. */
+.avatar-ring::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--green); opacity: 0;
+}
+.avatar-ring.speaking::after { animation: ring 1.6s ease-out infinite; }
+@keyframes ring { 0% { transform: scale(1); opacity: .6; } 100% { transform: scale(1.6); opacity: 0; } }
+
+/* Égaliseur audio sous l'avatar */
+.voice-eq { display: flex; align-items: flex-end; justify-content: center; gap: 3px; height: 40px; }
+.voice-eq span {
+  width: 4px; height: 4px; border-radius: 2px;
+  background: linear-gradient(to top, var(--accent-2), var(--green));
+  transition: height .06s linear;
+}
+.call-stage h2 { font-family: "Fraunces", serif; font-size: 30px; color: #fff; }
+.call-status { color: #e7e9f6; font-size: 17px; background: rgba(0,0,0,0.35); padding: 8px 18px; border-radius: 999px; }
+
+.mic-indicator { display: flex; align-items: center; gap: 4px; height: 30px; opacity: .25; transition: opacity .2s; }
+.mic-indicator.active { opacity: 1; }
+.mic-indicator span { width: 4px; height: 8px; background: var(--accent); border-radius: 2px; }
+.mic-indicator.active span { animation: bars .8s ease-in-out infinite; }
+.mic-indicator span:nth-child(2){ animation-delay:.1s } .mic-indicator span:nth-child(3){ animation-delay:.2s }
+.mic-indicator span:nth-child(4){ animation-delay:.3s } .mic-indicator span:nth-child(5){ animation-delay:.4s }
+.mic-indicator small { color: var(--muted); margin-left: 8px; font-size: 12px; }
+@keyframes bars { 0%,100% { height: 8px; } 50% { height: 24px; } }
+.call-debug { color: #ff9b9b; font-family: monospace; font-size: 13px; max-width: 600px; }
+
+.transcript-wrap { background: rgba(8,10,20,0.7); backdrop-filter: blur(12px); border-top: 1px solid var(--card-border); padding: 16px 20px 24px; }
+.transcript-title { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; }
+.transcript { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-width: 760px; margin: 0 auto; }
+.bubble { padding: 10px 16px; border-radius: 14px; max-width: 80%; font-size: 15px; line-height: 1.45; }
+.bubble.ai { background: rgba(108,139,255,0.18); align-self: flex-start; border-bottom-left-radius: 4px; }
+.bubble.user { background: rgba(255,122,89,0.2); align-self: flex-end; border-bottom-right-radius: 4px; }
+/* Bulle utilisateur en attente du texte Whisper : « … » qui pulse doucement. */
+.bubble.user.pending { opacity: .55; font-style: italic; letter-spacing: 2px; animation: bubblePulse 1.1s ease-in-out infinite; }
+@keyframes bubblePulse { 0%,100% { opacity: .35; } 50% { opacity: .7; } }
+
+/* Mots cliquables pour la traduction */
+.bubble .word { cursor: pointer; border-radius: 3px; transition: background .1s; }
+.bubble .word:hover { background: rgba(108,139,255,0.45); }
+
+/* Bulle de traduction (popup) */
+.tip {
+  position: fixed; z-index: 1000; max-width: 280px;
+  background: #161a32; border: 1px solid var(--card-border); border-radius: 12px;
+  padding: 10px 14px; box-shadow: 0 14px 34px rgba(0,0,0,0.55);
+}
+.tip .tip-src { color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+.tip .tip-fr { color: var(--green); font-weight: 700; font-size: 16px; }
+.tip .tip-note { color: var(--muted); font-size: 13px; margin-top: 3px; font-style: italic; }
+
+/* SUMMARY */
+.summary-head { text-align: center; margin-bottom: 32px; }
+.summary-title { font-family: "Fraunces", serif; font-size: clamp(30px, 5vw, 46px); margin-top: 8px; }
+
+.summary-loading { text-align: center; color: var(--muted); padding: 60px 0; }
+.spinner { width: 44px; height: 44px; border: 4px solid var(--card-border); border-top-color: var(--accent); border-radius: 50%; margin: 0 auto 18px; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.score-card { display: flex; align-items: center; gap: 28px; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 28px; margin-bottom: 22px; flex-wrap: wrap; }
+.score-gauge { position: relative; width: 140px; height: 140px; flex-shrink: 0; }
+.score-gauge svg { width: 140px; height: 140px; transform: rotate(-90deg); }
+.gauge-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 10; }
+.gauge-arc { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1.1s ease, stroke .4s; }
+.score-value { position: absolute; inset: 0; display: grid; place-items: center; flex-direction: column; }
+.score-value { font-family: "Fraunces", serif; font-size: 40px; font-weight: 700; }
+.score-value small { font-size: 16px; color: var(--muted); font-family: "Inter", sans-serif; }
+.score-side { flex: 1; min-width: 220px; }
+.score-justif { color: var(--muted); margin-top: 8px; line-height: 1.55; }
+
+.summary-block { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px 22px; margin-bottom: 18px; }
+.summary-block p { color: #d8dbf0; line-height: 1.6; }
+.summary-block ul { list-style: none; margin-top: 6px; }
+.summary-block li { color: #d8dbf0; line-height: 1.55; padding: 6px 0 6px 22px; position: relative; }
+.summary-block li::before { content: "•"; position: absolute; left: 4px; color: var(--accent-2); }
+.block-title.green { color: var(--green); }
+.block-title.orange { color: var(--accent); }
+.summary-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 640px) { .summary-cols { grid-template-columns: 1fr; } }
+
+/* ===== Cadeau "invité surprise" sur le menu (brillant, à ouvrir) ===== */
+.menu-gift {
+  position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px;
+  width: 100%; max-width: 760px; margin: 0 auto 18px; padding: 16px 22px;
+  border: none; cursor: pointer; border-radius: 16px; color: #fff; font-size: 17px; font-weight: 500;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  animation: giftpulse 1.8s ease-in-out infinite;
+}
+.menu-gift .gift-icon { font-size: 30px; animation: giftwobble 1.5s ease-in-out infinite; transform-origin: 50% 80%; }
+.menu-gift .gift-text b { font-weight: 700; }
+@keyframes giftpulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(255,122,89,0.35); }
+  50% { box-shadow: 0 8px 40px rgba(255,210,90,0.75); }
+}
+@keyframes giftwobble { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+/* reflet qui balaie la surface */
+.menu-gift::after {
+  content: ""; position: absolute; top: 0; left: -60%; width: 50%; height: 100%;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  animation: giftshine 2.6s infinite;
+}
+@keyframes giftshine { 0% { left: -60%; } 55%, 100% { left: 130%; } }
+
+/* ===== Invité surprise (Raj) ===== */
+.bonus-guest {
+  display: flex; align-items: center; gap: 16px; max-width: 760px; margin: 0 auto 26px;
+  background: linear-gradient(135deg, rgba(255,122,89,0.18), rgba(108,139,255,0.18));
+  border: 1px solid var(--accent); border-radius: 18px; padding: 16px 20px;
+  box-shadow: 0 0 30px rgba(255,122,89,0.25);
+}
+.bonus-guest img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 16px rgba(0,0,0,.4); }
+.bonus-guest .bg-info { flex: 1; }
+.bonus-guest .bg-tag { color: var(--accent); font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+.bonus-guest .bg-name { font-family: "Fraunces", serif; font-size: 22px; font-weight: 700; }
+.bonus-guest .bg-desc { color: var(--muted); font-size: 14px; }
+.bonus-guest button {
+  border: none; cursor: pointer; color: #fff; font-weight: 600; font-size: 15px;
+  padding: 12px 20px; border-radius: 12px; white-space: nowrap;
+  background: linear-gradient(135deg, var(--accent), #ff9d59);
+  box-shadow: 0 8px 20px rgba(255,122,89,0.4); transition: transform .15s;
+}
+.bonus-guest button:hover { transform: translateY(-2px); }
+
+/* ===== Gamification : bandeau menu ===== */
+.gami-banner {
+  display: flex; align-items: center; gap: 14px; width: 100%; max-width: 760px; margin: 0 auto 22px;
+  background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 12px 18px;
+  cursor: pointer; color: var(--text); transition: border-color .15s, transform .15s;
+}
+.gami-banner:hover { border-color: var(--accent-2); transform: translateY(-2px); }
+.gami-lvl { font-weight: 700; white-space: nowrap; }
+.gami-lvl span { color: var(--accent-2); }
+.gami-bar { flex: 1; height: 10px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; }
+.gami-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-2), var(--green)); border-radius: 6px; transition: width .5s ease; }
+.gami-streak { font-weight: 700; white-space: nowrap; }
+.gami-cta { color: var(--accent); font-weight: 600; font-size: 13px; white-space: nowrap; }
+
+/* ===== Profil ===== */
+.level-card { max-width: 620px; margin: 0 auto 22px; background: var(--card); border: 1px solid var(--card-border); border-radius: 18px; padding: 22px; text-align: center; }
+.level-big { font-family: "Fraunces", serif; font-size: 28px; font-weight: 700; }
+.level-big span { color: var(--accent-2); }
+.level-bar { height: 14px; background: rgba(255,255,255,0.1); border-radius: 8px; overflow: hidden; margin: 14px 0 8px; }
+.level-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-2), var(--green)); border-radius: 8px; transition: width .6s ease; }
+.level-xp { color: var(--muted); font-size: 14px; }
+
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+.badge { background: var(--card); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px 12px; text-align: center; }
+.badge.locked { opacity: .4; filter: grayscale(1); }
+.badge .badge-emoji { font-size: 32px; }
+.badge .badge-label { font-size: 13px; margin-top: 6px; font-weight: 600; }
+
+/* ===== Toast (XP / badge / déblocage) ===== */
+.toast {
+  position: fixed; top: 18px; left: 50%; transform: translateX(-50%) translateY(-20px);
+  z-index: 1100; background: #161a32; border: 1px solid var(--card-border); border-radius: 14px;
+  padding: 14px 22px; box-shadow: 0 14px 34px rgba(0,0,0,0.55); color: var(--text); text-align: center;
+  opacity: 0; transition: opacity .3s, transform .3s; max-width: 90vw;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast .toast-xp { color: var(--green); font-weight: 800; font-size: 18px; }
+.toast .toast-badge { color: var(--accent); font-weight: 600; margin-top: 4px; }
+
+/* ===== MENU (mode) ===== */
+.mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; max-width: 760px; margin: 0 auto; }
+.mode-card {
+  text-align: center; background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 36px 26px; cursor: pointer; color: var(--text);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease; backdrop-filter: blur(10px);
+}
+.mode-card:hover { transform: translateY(-6px); border-color: var(--accent); background: rgba(255,122,89,0.08); }
+.mode-icon { font-size: 44px; margin-bottom: 10px; }
+.mode-name { font-family: "Fraunces", serif; font-size: 24px; font-weight: 700; }
+.mode-desc { color: var(--muted); font-size: 14px; margin: 10px 0 16px; line-height: 1.5; }
+
+/* ===== Surnom ===== */
+.nickname-banner {
+  display: flex; align-items: center; gap: 14px; max-width: 620px; margin: 0 auto 28px;
+  background: linear-gradient(135deg, rgba(255,122,89,0.16), rgba(108,139,255,0.16));
+  border: 1px solid var(--card-border); border-radius: 16px; padding: 14px 20px;
+}
+.nickname-banner.reveal { margin: 18px 0 4px; }
+.nick-emoji { font-size: 30px; }
+.nick-name { font-family: "Fraunces", serif; font-size: 20px; font-weight: 700; }
+.nick-reason { color: var(--muted); font-size: 14px; }
+
+/* ===== État du cours ===== */
+.course-state {
+  background: var(--card); border: 1px solid var(--card-border); border-radius: 16px;
+  padding: 16px 18px; margin-bottom: 22px; color: #d8dbf0; font-size: 15px; line-height: 1.5;
+}
+.course-state .cs-resume { color: var(--green); font-weight: 600; }
+.course-state .cs-review { color: var(--accent); font-weight: 600; }
+
+/* ===== Leçon ===== */
+.lesson-timer {
+  color: #fff; font-weight: 600; font-variant-numeric: tabular-nums;
+  background: rgba(0,0,0,0.4); padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(8px);
+}
+.lesson-timer.ready { background: rgba(61,220,132,0.85); }
+.lesson-finish { width: auto; margin-top: 8px; }
+.verdict-badge {
+  display: inline-block; font-weight: 700; padding: 6px 14px; border-radius: 999px; font-size: 15px; margin-bottom: 8px;
+}
+.verdict-badge.pass { background: rgba(61,220,132,0.2); color: var(--green); }
+.verdict-badge.fail { background: rgba(255,122,89,0.2); color: var(--accent); }
+
+/* ===== Accueil cours : pied ===== */
+.course-foot { text-align: center; margin-top: 36px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.reset-link { color: var(--muted); font-size: 13px; opacity: .8; }
+.reset-link:hover { color: var(--accent); }
+
+/* Bouton "Ma progression" : mis en avant (dégradé bleu/vert, comme les autres CTA) */
+.pg-cta {
+  border: none; cursor: pointer; color: #fff; font-size: 17px; font-weight: 600;
+  padding: 15px 30px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent-2), var(--green));
+  box-shadow: 0 10px 26px rgba(108,139,255,0.35);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.pg-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(108,139,255,0.45); }
+
+/* ===== Tableau de progression ===== */
+.progress-courses { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.pg-course { background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 18px 20px; }
+.pg-course-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.pg-course-head img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.pg-course-head b { font-size: 17px; }
+.pg-resume { color: var(--green); font-size: 12px; margin-left: 6px; }
+.pg-lessons { list-style: none; }
+.pg-lessons li { padding: 6px 0; font-size: 14px; color: #d8dbf0; border-bottom: 1px solid var(--card-border); }
+.pg-lessons li b { color: var(--green); }
+.pg-lessons li.muted { color: var(--muted); border: none; }
+.pg-review { margin-top: 12px; color: var(--accent); font-size: 14px; }
+.progress-empty { text-align: center; color: var(--muted); padding: 40px 0; }
+
+/* ===== Carnet d'erreurs ===== */
+.eb-themes { margin-top: 26px; background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px 18px; }
+.eb-themes .block-title { color: var(--accent); margin-bottom: 8px; }
+.eb-themes ul { list-style: none; }
+.eb-themes li { color: #d8dbf0; padding: 5px 0 5px 20px; position: relative; font-size: 14px; }
+.eb-themes li::before { content: "🎯"; position: absolute; left: 0; }
+
+/* ===== MINI-JEU : Quiz éclair ===== */
+.game-best { text-align: center; color: var(--muted); margin-bottom: 18px; }
+.game-best b { color: var(--green); }
+
+/* Word Rush : grille de thèmes + chrono global */
+.wr-theme-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.wr-theme {
+  background: var(--card); border: 1.5px solid var(--card-border); color: var(--text);
+  border-radius: 14px; padding: 16px 12px; cursor: pointer; text-align: center;
+  transition: transform .12s ease, border-color .12s, background .12s;
+}
+.wr-theme:hover { transform: translateY(-3px); border-color: var(--accent-2); }
+.wr-theme.selected { border-color: var(--accent); background: rgba(255,122,89,0.10); }
+.wr-theme .wr-emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+.wr-time { color: #fff; font-weight: 700; font-size: 20px; font-variant-numeric: tabular-nums; background: rgba(0,0,0,0.4); padding: 6px 14px; border-radius: 999px; }
+.wr-time.low { background: rgba(255,93,93,0.85); }
+
+.game-hud { display: flex; align-items: center; justify-content: space-between; max-width: 720px; margin: 0 auto; padding: 24px 20px 10px; }
+.game-score-wrap { font-weight: 700; font-size: 20px; color: #fff; }
+.game-combo { color: var(--accent); font-size: 15px; margin-left: 8px; }
+.game-lives { font-size: 20px; letter-spacing: 2px; }
+
+.game-timer-wrap { max-width: 720px; margin: 0 auto; height: 8px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; }
+.game-timer-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), var(--accent-2)); border-radius: 6px; }
+.game-timer-bar.low { background: linear-gradient(90deg, #ff5d5d, var(--accent)); }
+
+.game-card { max-width: 720px; margin: 22px auto 0; background: var(--card); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 26px; backdrop-filter: blur(10px); }
+.game-card-top { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; }
+.game-qtype { color: var(--accent-2); font-weight: 600; }
+.game-prompt { font-family: "Fraunces", serif; font-size: clamp(22px, 4vw, 32px); text-align: center; margin: 22px 0 26px; line-height: 1.25; }
+
+.game-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .game-choices { grid-template-columns: 1fr; } }
+.game-choice {
+  background: rgba(255,255,255,0.05); border: 1.5px solid var(--card-border); color: var(--text);
+  padding: 18px; border-radius: 14px; cursor: pointer; font-size: 16px; font-weight: 500;
+  transition: transform .12s ease, border-color .12s, background .12s; text-align: center;
+}
+.game-choice:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--accent-2); }
+.game-choice:disabled { cursor: default; }
+.game-choice.correct { background: rgba(61,220,132,0.22); border-color: var(--green); color: #eafff3; }
+.game-choice.wrong { background: rgba(255,93,93,0.18); border-color: #ff5d5d; color: #ffe9e9; }
+.game-choice.dim { opacity: .45; }
+
+/* Feedback bien visible : encadré + coloré selon bon/mauvais, texte lisible. */
+.game-feedback { min-height: 24px; text-align: center; margin-top: 18px; font-size: 16px; color: var(--text); line-height: 1.5; }
+.game-feedback.ok, .game-feedback.ko { padding: 14px 16px; border-radius: 14px; }
+.game-feedback.ok { background: rgba(61,220,132,0.14); border: 1px solid rgba(61,220,132,0.45); }
+.game-feedback.ko { background: rgba(255,93,93,0.12); border: 1px solid rgba(255,93,93,0.40); }
+.game-feedback .gf-points { color: var(--green); font-weight: 800; font-size: 18px; }
+.game-feedback .fb-answer { font-size: 17px; font-weight: 600; }
+.game-feedback .fb-answer b { color: var(--green); }
+.game-feedback .fb-explain { color: #e7e9f6; font-size: 14px; margin-top: 6px; font-weight: 400; }
+.game-feedback .fb-why { color: #ffcdbd; font-size: 13.5px; margin-top: 6px; font-style: italic; }
+
+/* ===== Game over ===== */
+.gameover-stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 24px; }
+.go-stat { flex: 1; max-width: 180px; text-align: center; background: var(--card); border: 1px solid var(--card-border); border-radius: 16px; padding: 20px; }
+.go-num { font-family: "Fraunces", serif; font-size: 34px; font-weight: 700; }
+.go-label { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+.go-recap { list-style: none; }
+.go-recap li { padding: 8px 0; border-bottom: 1px solid var(--card-border); font-size: 14px; line-height: 1.5; }
+.go-recap .gr-ok { color: var(--green); }
+.go-recap .gr-ko { color: var(--accent); }
+.go-recap .gr-q { color: #d8dbf0; }
+
+.summary-actions { display: flex; gap: 14px; align-items: center; margin-top: 26px; }
+/* Hauteur FIXE identique pour les deux boutons : alignement garanti quel que soit
+   le padding/la police/le margin hérité. */
+.summary-actions .primary-btn,
+.summary-actions .ghost-btn.big {
+  height: 56px; margin: 0; padding-top: 0; padding-bottom: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.summary-actions .primary-btn { width: auto; flex: 1; }
+.ghost-btn.big {
+  font-size: 16px; padding-left: 22px; padding-right: 22px;
+  border: 1px solid var(--card-border); border-radius: 16px;
+}
+.ghost-btn.big:hover { border-color: var(--text); }
+
+/* ===== Prof de vocabulaire : badge sur la carte + sélecteur de thème ===== */
+.char-badge {
+  display: inline-block; margin: 4px auto 2px; padding: 3px 10px; border-radius: 999px;
+  background: rgba(108,139,255,0.18); color: var(--accent-2); font-size: 12px; font-weight: 700;
+  letter-spacing: .3px;
+}
+
+/* ===== Carte de vocabulaire du jour (bilan de leçon) ===== */
+.vocab-card {
+  max-width: 720px; margin: 22px auto 0; background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 22px; backdrop-filter: blur(10px);
+}
+.vocab-list { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.vocab-chip {
+  display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border-radius: 14px;
+  background: rgba(255,255,255,0.05); border: 1.5px solid var(--card-border); min-width: 120px;
+}
+.vocab-chip.to-practice { border-color: var(--accent); background: rgba(255,122,89,0.10); }
+.vocab-chip .vc-word { font-weight: 700; font-size: 16px; }
+.vocab-chip .vc-gloss { color: var(--muted); font-size: 13px; }
+.vocab-chip .vc-tag {
+  align-self: flex-start; margin-top: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .5px; color: var(--accent);
+}
+
+/* ===== Recommandation : test de niveau (menu) ===== */
+.assessment-reco {
+  display: flex; align-items: center; gap: 16px; width: 100%; max-width: 760px; margin: 0 auto 18px;
+  text-align: left; padding: 16px 18px; border-radius: 18px; cursor: pointer; color: var(--text);
+  background: linear-gradient(120deg, rgba(108,139,255,0.16), rgba(124,232,180,0.10));
+  border: 1px solid var(--card-border); transition: transform .14s ease, border-color .14s, box-shadow .14s;
+}
+.assessment-reco:hover { transform: translateY(-2px); border-color: var(--accent-2); }
+/* Première utilisation : on attire l'œil (halo qui respire). */
+.assessment-reco.first-time {
+  border-color: rgba(124,232,180,0.55);
+  box-shadow: 0 0 0 1px rgba(124,232,180,0.35), 0 10px 30px rgba(108,139,255,0.18);
+  animation: recoPulse 2.4s ease-in-out infinite;
+}
+@keyframes recoPulse {
+  0%,100% { box-shadow: 0 0 0 1px rgba(124,232,180,0.30), 0 8px 24px rgba(108,139,255,0.14); }
+  50%     { box-shadow: 0 0 0 2px rgba(124,232,180,0.55), 0 12px 34px rgba(108,139,255,0.26); }
+}
+.assessment-reco .ar-avatar img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 16px rgba(0,0,0,.4); }
+.assessment-reco .ar-body { flex: 1; }
+.assessment-reco .ar-tag { color: var(--accent-2); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.assessment-reco .ar-title { font-family: "Fraunces", serif; font-size: 21px; font-weight: 700; margin: 2px 0; }
+.assessment-reco .ar-desc { color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+.assessment-reco .ar-cta { color: var(--accent); font-weight: 700; white-space: nowrap; }
+
+.assess-hint { color: var(--muted); font-size: 13px; max-width: 420px; text-align: center; margin: 10px auto 0; line-height: 1.5; }
+
+/* ===== Barre "Reprendre le dernier cours" =====
+   Desktop : carte mise en avant en haut des choix.
+   Mobile  : barre fixée en bas de l'écran (voir media query). */
+.resume-bar {
+  display: flex; align-items: center; gap: 14px; width: 100%; max-width: 760px; margin: 0 auto 18px;
+  text-align: left; padding: 14px 18px; border-radius: 18px; cursor: pointer; color: var(--text);
+  background: linear-gradient(120deg, rgba(255,122,89,0.18), rgba(108,139,255,0.12));
+  border: 1px solid var(--card-border); transition: transform .14s ease, border-color .14s, box-shadow .14s;
+}
+.resume-bar:hover { transform: translateY(-2px); border-color: var(--accent); }
+.resume-bar .rb-avatar img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; box-shadow: 0 6px 16px rgba(0,0,0,.4); background: var(--card); }
+.resume-bar .rb-body { flex: 1; min-width: 0; }
+.resume-bar .rb-tag { color: var(--accent); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.resume-bar .rb-title { font-family: "Fraunces", serif; font-size: 19px; font-weight: 700; margin: 2px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.resume-bar .rb-sub { color: var(--muted); font-size: 13px; line-height: 1.4; }
+.resume-bar .rb-cta { color: var(--accent); font-weight: 700; white-space: nowrap; }
+
+/* ===== Curseur de niveau (bilan d'évaluation) ===== */
+.level-cursor { max-width: 720px; margin: 0 auto 22px; text-align: center; }
+.level-scale { display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; position: relative; }
+.level-scale::before {
+  content: ""; position: absolute; top: 9px; left: 5%; right: 5%; height: 3px;
+  background: rgba(255,255,255,0.10); border-radius: 3px;
+}
+.ls-step { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; position: relative; z-index: 1; }
+.ls-dot { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.12); border: 2px solid var(--card-border); transition: transform .2s; }
+.ls-name { font-size: 12px; color: var(--muted); font-weight: 600; }
+.ls-step.reached .ls-dot { background: var(--accent-2); border-color: var(--accent-2); }
+.ls-step.reached .ls-name { color: var(--text); }
+.ls-step.current .ls-dot {
+  transform: scale(1.7); background: var(--accent); border-color: #fff;
+  box-shadow: 0 0 0 4px rgba(255,122,89,0.25);
+}
+.ls-step.current .ls-name { color: var(--accent); font-weight: 800; }
+.level-verdict { margin-top: 22px; font-size: 16px; color: var(--muted); }
+.level-pill-big {
+  display: inline-block; margin-left: 6px; padding: 6px 16px; border-radius: 999px; color: #fff;
+  font-family: "Fraunces", serif; font-size: 20px; font-weight: 700;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+}
+
+/* =========================================================================
+ * RESPONSIVE MOBILE (smartphones, iPhone inclus)
+ * -------------------------------------------------------------------------
+ * Principes :
+ *   - On respecte l'encoche / les coins arrondis via env(safe-area-inset-*).
+ *   - On utilise 100dvh (hauteur "dynamique") pour l'écran d'appel : évite que
+ *     la barre d'URL mobile rogne le contenu (bug classique du 100vh sur iOS).
+ *   - On empêche l'inflation auto des polices iOS et le halo de tap bleu.
+ * ========================================================================= */
+
+/* Réglages globaux utiles sur tout mobile (pas seulement sous un breakpoint). */
+html { -webkit-text-size-adjust: 100%; }
+button, a, .char-card, .mode-card, .pill, .decor-card, .game-choice, .wr-theme {
+  -webkit-tap-highlight-color: transparent; /* pas de flash bleu au toucher */
+}
+/* Défilement fluide sur iOS pour les zones scrollables. */
+.transcript, .screen { -webkit-overflow-scrolling: touch; }
+
+/* L'écran d'appel occupe toute la hauteur RÉELLE visible (dvh) + marges d'encoche. */
+.screen.call { min-height: 100vh; min-height: 100dvh; }
+.call-topbar { padding-top: calc(20px + env(safe-area-inset-top)); }
+.transcript-wrap { padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+
+/* ---- Tablettes & grands téléphones ---- */
+@media (max-width: 760px) {
+  .screen {
+    padding: calc(28px + env(safe-area-inset-top)) 18px
+             calc(56px + env(safe-area-inset-bottom));
+  }
+  .hero { margin-bottom: 30px; }
+  .logo { margin-bottom: 18px; }
+  .hero-sub { font-size: 16px; }
+
+  /* Les grilles "riches" (texte long) passent en UNE colonne (lisible au pouce). */
+  .char-cards, .mode-cards, .progress-courses { grid-template-columns: 1fr; }
+  .char-card { padding: 22px 18px; }
+  .mode-card { padding: 26px 20px; }
+  .char-avatar img { width: 92px; height: 92px; }
+
+  /* Les grilles "compactes" (décors, badges, thèmes) restent en DEUX colonnes :
+     leur contenu est court, et 1 colonne rendait les pages interminables
+     (le bouton d'action finissait hors d'atteinte sans gros scroll). */
+  .decor-cards, .badges-grid, .wr-theme-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .decor-card { height: 108px; padding: 12px; }
+  .decor-label { font-size: 14px; }
+  .badge { padding: 12px 10px; }
+  .wr-theme { padding: 14px 10px; }
+
+  /* Barre du haut des appels/leçons/examens : tout sur UNE ligne (les libellés
+     "B2 · Avancé", le chrono et Quitter se cassaient en deux). */
+  .call-topbar { gap: 8px; }
+  .call-place, .end-btn, .lesson-timer { white-space: nowrap; font-size: 13px; }
+  .call-place { padding: 7px 12px; }
+  .end-btn { padding: 9px 14px; }
+  .lesson-timer { padding: 7px 12px; }
+
+  /* En-tête de setup (avatar + nom) : centré, comme les héros des autres écrans. */
+  .setup-head { flex-direction: column; text-align: center; gap: 10px; margin-bottom: 28px; }
+  .setup-block { margin-bottom: 26px; }
+
+  /* Pastilles (niveaux, durées, thèmes) : la ligne "en drapeau" devient une
+     grille 2 colonnes uniforme — rythme régulier, cibles tactiles larges et
+     prévisibles (hauteur >= 44px). Les libellés longs passent à la ligne. */
+  .pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pill {
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    min-height: 46px; padding: 10px 12px; white-space: normal; line-height: 1.25;
+    border-radius: 14px;
+  }
+  /* Nombre impair de pastilles : la dernière s'étire sur les 2 colonnes
+     (pas de case vide orpheline). */
+  .pills > .pill:last-child:nth-child(odd) { grid-column: span 2; }
+
+  /* Les bannières en ligne (reco, surnom, invité, gami) s'autorisent à passer
+     à la ligne pour ne pas déborder sur écran étroit. */
+  .assessment-reco, .bonus-guest, .nickname-banner, .menu-gift { flex-wrap: wrap; }
+  .assessment-reco .ar-cta { width: 100%; margin-top: 4px; }
+  .bonus-guest button { width: 100%; }
+
+  /* "Reprendre le dernier cours" : barre fixée en bas (toujours à portée du pouce),
+     sans gêner les autres choix (on réserve l'espace via .resume-active plus bas). */
+  .resume-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    max-width: none; margin: 0; border-radius: 18px 18px 0 0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    border: none; border-top: 1px solid var(--card-border);
+    background: linear-gradient(120deg, rgba(28,18,16,0.97), rgba(16,18,32,0.97));
+    backdrop-filter: blur(8px); box-shadow: 0 -8px 24px rgba(0,0,0,0.45);
+  }
+  .resume-bar:hover { transform: none; } /* pas d'effet de survol sur une barre fixe */
+  .resume-bar .rb-sub { display: none; }  /* compact en barre : titre + CTA suffisent */
+  .resume-bar .rb-avatar img { width: 44px; height: 44px; }
+  /* Réserve l'espace en bas pour ne masquer aucun bouton derrière la barre. */
+  .screen.resume-active { padding-bottom: calc(104px + env(safe-area-inset-bottom)); }
+
+  /* Écran d'appel : avatar un peu plus compact pour laisser voir le sous-titre. */
+  .avatar-ring { width: 150px; height: 150px; }
+  .avatar-ring img { width: 124px; height: 124px; }
+  .call-stage h2 { font-size: 24px; }
+  .call-topbar { padding-left: 16px; padding-right: 16px; }
+  .transcript { max-height: 30vh; }
+
+  /* Boutons d'action de bilan empilés (pleine largeur, plus faciles à viser). */
+  .summary-actions { flex-direction: column; align-items: stretch; }
+  .summary-actions .primary-btn, .summary-actions .ghost-btn.big { width: 100%; flex: none; }
+
+  /* Stats de fin de jeu : on garde la ligne mais on resserre. */
+  .gameover-stats { gap: 10px; }
+  .go-num { font-size: 28px; }
+}
+
+/* ---- Petits téléphones (≤ 430px : iPhone mini/standard, etc.) ---- */
+@media (max-width: 430px) {
+  .screen { padding-left: 14px; padding-right: 14px; }
+  .setup-avatar img { width: 64px; height: 64px; }
+  .setup-head h2 { font-size: 24px; }
+  .pill { font-size: 14px; }
+
+  /* Curseur de niveau : 7 paliers tiennent à l'étroit -> on réduit les libellés. */
+  .level-scale { gap: 2px; }
+  .ls-name { font-size: 10px; }
+  .ls-dot { width: 16px; height: 16px; }
+
+  /* Score : jauge centrée au-dessus du texte. */
+  .score-card { gap: 16px; padding: 22px 18px; justify-content: center; }
+
+  .game-hud { padding: 18px 14px 8px; }
+  .gameover-stats { flex-wrap: wrap; }
+  .go-stat { padding: 16px 12px; }
+}
+
+/* ---- Téléphone en mode paysage (hauteur réduite) : on compacte l'appel ---- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .avatar-ring { width: 110px; height: 110px; }
+  .avatar-ring img { width: 90px; height: 90px; }
+  .call-stage { gap: 8px; padding: 10px; }
+  .call-stage h2 { font-size: 20px; }
+  .transcript { max-height: 22vh; }
+}
+
+/* ---- Overlay "Connexion perdue" : par-dessus tout, centré, fond assombri ---- */
+.disconnect-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+  background: rgba(6, 8, 16, 0.78); backdrop-filter: blur(10px);
+}
+.disconnect-card {
+  width: 100%; max-width: 420px; text-align: center;
+  background: var(--bg-soft); border: 1px solid var(--card-border); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 32px 28px;
+  animation: disconnect-pop .22s ease;
+}
+@keyframes disconnect-pop { from { transform: scale(.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.disconnect-icon { font-size: 44px; margin-bottom: 10px; }
+.disconnect-title { color: var(--text); font-size: 22px; margin-bottom: 12px; }
+.disconnect-msg { color: var(--muted); font-size: 15px; line-height: 1.5; margin-bottom: 24px; }
+.disconnect-actions { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
+/* Le bouton "Terminer/Menu" (ghost) : on neutralise la marge basse héritée de .ghost-btn.big. */
+.disconnect-actions .ghost-btn { margin-bottom: 0; }
+
+/* =========================================================
+   FEEDBACK — montée de niveau, confettis, juice des jeux
+   ========================================================= */
+
+/* Overlay festif de montée de niveau */
+.levelup {
+  position: fixed; inset: 0; z-index: 1200;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(6, 8, 16, 0.55); backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity .3s ease;
+}
+.levelup.show { opacity: 1; }
+.levelup.out { opacity: 0; }
+.levelup-card {
+  position: relative; text-align: center; padding: 34px 40px;
+  background: radial-gradient(120% 120% at 50% 0%, #232a52 0%, var(--bg-soft) 70%);
+  border: 1px solid var(--card-border); border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 4px rgba(108,139,255,.12);
+  transform: scale(.7); opacity: 0;
+}
+.levelup.show .levelup-card { animation: levelup-pop .5s cubic-bezier(.18,1.4,.4,1) forwards; }
+@keyframes levelup-pop { to { transform: scale(1); opacity: 1; } }
+.levelup-burst {
+  font-size: 60px; line-height: 1; margin-bottom: 6px;
+  filter: drop-shadow(0 6px 18px rgba(255,209,102,.55));
+  animation: burst-spin 1.1s ease-out;
+}
+@keyframes burst-spin { 0% { transform: scale(0) rotate(-90deg); } 60% { transform: scale(1.25) rotate(12deg); } 100% { transform: scale(1) rotate(0); } }
+.levelup-title {
+  font-family: "Fraunces", serif; font-weight: 700; font-size: 34px; color: var(--text);
+  background: linear-gradient(90deg, #ffd166, var(--accent)); -webkit-background-clip: text;
+  background-clip: text; -webkit-text-fill-color: transparent;
+}
+.levelup-sub { color: var(--muted); margin-top: 6px; font-size: 15px; }
+
+/* Confettis (générés en JS : <i> colorés qui tombent) */
+.confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.confetti i {
+  position: absolute; top: -12px; width: 9px; height: 14px; border-radius: 2px;
+  opacity: 0; animation-name: confetti-fall; animation-timing-function: linear;
+  animation-iteration-count: 1;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 1; }
+}
+
+/* Points qui s'envolent (juice) */
+.fly-points {
+  position: fixed; z-index: 1100; transform: translate(-50%, 0);
+  font-family: "Fraunces", serif; font-weight: 700; font-size: 26px; color: var(--green);
+  text-shadow: 0 2px 10px rgba(0,0,0,.5); pointer-events: none;
+  animation: fly-up .95s ease-out forwards;
+}
+@keyframes fly-up {
+  0% { opacity: 0; transform: translate(-50%, 6px) scale(.7); }
+  20% { opacity: 1; transform: translate(-50%, -6px) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -54px) scale(1); }
+}
+
+/* Pulsation (combo) */
+.pulse { animation: combo-pulse .45s ease; }
+@keyframes combo-pulse { 0% { transform: scale(1); } 35% { transform: scale(1.45); } 100% { transform: scale(1); } }
+
+/* "Pop" tactile au tap d'un choix (pill / thème / réponse) — déclenché par app.js. */
+.pop-anim { animation: pill-pop .26s ease; }
+@keyframes pill-pop { 0% { transform: scale(1); } 40% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+/* Effet "pressé" : tout choix/carte s'enfonce sous le doigt. Visible MÊME quand le
+   tap change d'écran (cartes de cours, modes…), là où le "pop" ne se verrait pas. */
+.pill:active, .wr-theme:active, .game-choice:active,
+.char-card:active, .mode-card:active, .decor-card:active,
+.resume-bar:active, .assessment-reco:active {
+  transform: scale(0.96);
+}
+
+/* Secousse (mauvaise réponse) */
+.shake { animation: shake-x .4s cubic-bezier(.36,.07,.19,.97); }
+@keyframes shake-x {
+  10%, 90% { transform: translateX(-2px); }
+  20%, 80% { transform: translateX(4px); }
+  30%, 50%, 70% { transform: translateX(-7px); }
+  40%, 60% { transform: translateX(7px); }
+}
+
+/* Réglage son/vibration (écran Profil) */
+.setting-row {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 14px 18px; min-height: 52px;
+  background: var(--card); border: 1px solid var(--card-border); border-radius: 14px;
+  color: var(--text); font-size: 15px; cursor: pointer; transition: background .15s ease;
+}
+.setting-row:hover { background: rgba(255,255,255,.1); }
+.setting-label { display: flex; align-items: center; gap: 10px; }
+.setting-state {
+  font-weight: 600; color: var(--green);
+  background: rgba(61,220,132,.14); padding: 4px 12px; border-radius: 999px; font-size: 13px;
+}
+.setting-state.off { color: var(--muted); background: rgba(154,160,189,.14); }
+
+/* Respect des préférences d'accessibilité : on calme les animations. */
+@media (prefers-reduced-motion: reduce) {
+  .levelup-card, .levelup-burst, .fly-points, .pulse, .shake, .pop-anim,
+  .confetti i { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  .confetti { display: none; }
+}

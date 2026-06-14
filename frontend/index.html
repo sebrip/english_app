@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <!-- viewport-fit=cover : la page passe SOUS l'encoche/coins arrondis (on gère les
+       marges de sécurité via env(safe-area-inset-*) dans le CSS). maximum-scale=1 +
+       user-scalable=no : évite le zoom involontaire au double-tap sur mobile. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <title>English SpeakApp — Realtime</title>
+  <!-- Couleur de la barre d'état / du navigateur (mobile). -->
+  <meta name="theme-color" content="#0a0c18" />
+  <!-- Mode "web-app" plein écran quand ajoutée à l'écran d'accueil (iOS + Android). -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SpeakApp" />
+  <!-- PWA : installable sur l'écran d'accueil (manifeste + icônes). -->
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=26" />
+</head>
+<body>
+  <!--
+    STRUCTURE DE LA PAGE
+    ====================
+    La page contient 4 <section class="screen"> empilées ; une seule est
+    visible à la fois (la classe "active" est posée/retirée par app.js -> show()).
+      • #screen-home    : choix du personnage
+      • #screen-setup   : choix du niveau + décor
+      • #screen-call    : la conversation (avatar, statut, sous-titres)
+      • #screen-summary : le bilan /10
+    Les conteneurs avec un id="" mais vides (ex: #character-cards) sont REMPLIS
+    dynamiquement par app.js. Le design est dans styles.css.
+  -->
+  <div class="bg-orbs"><span></span><span></span><span></span></div>
+
+  <!-- ================= MENU (écran d'entrée) ================= -->
+  <section id="screen-menu" class="screen active">
+    <header class="hero">
+      <div class="logo">🎙️ English <span>SpeakApp</span></div>
+      <h1 class="hero-title">Parlez anglais. <em>Pour de vrai.</em></h1>
+      <p class="hero-sub">Choisissez votre mode : discuter librement, ou suivre de vrais cours qui se souviennent de vous.</p>
+    </header>
+
+    <button id="menu-gift" class="menu-gift" hidden>
+      <span class="gift-icon">🎁</span>
+      <span class="gift-text">Un invité surprise t'attend ! <b>Clique pour ouvrir ✨</b></span>
+    </button>
+
+    <button id="gami-banner" class="gami-banner">
+      <div class="gami-lvl">Niv. <span id="gami-level">1</span></div>
+      <div class="gami-bar"><div id="gami-bar-fill" class="gami-bar-fill"></div></div>
+      <div class="gami-streak">🔥 <span id="gami-streak">0</span></div>
+      <div class="gami-cta">Profil →</div>
+    </button>
+
+    <!-- Recommandation : test de niveau (mise en avant, surtout à la 1re utilisation) -->
+    <button id="assessment-reco" class="assessment-reco" hidden>
+      <div class="ar-avatar"><img id="ar-avatar" alt="David" /></div>
+      <div class="ar-body">
+        <div class="ar-tag" id="ar-tag">⭐ Recommandé pour bien démarrer</div>
+        <div class="ar-title" id="ar-title">Test de niveau · 10 min</div>
+        <p class="ar-desc" id="ar-desc">Découvre ton niveau réel (du débutant au C2) avec David, l'examinateur. C'est optionnel, mais c'est le meilleur point de départ.</p>
+      </div>
+      <span class="ar-cta" id="ar-cta">Démarrer →</span>
+    </button>
+
+    <!-- Reprendre la dernière leçon en pause (n'apparaît que s'il y en a une) -->
+    <button id="resume-course-menu" class="resume-bar" hidden>
+      <div class="rb-avatar"><img id="rb-avatar-menu" alt="" /></div>
+      <div class="rb-body">
+        <div class="rb-tag">▶️ Reprendre votre cours</div>
+        <div class="rb-title" id="rb-title-menu">—</div>
+        <div class="rb-sub" id="rb-sub-menu"></div>
+      </div>
+      <span class="rb-cta">Continuer →</span>
+    </button>
+
+    <div class="mode-cards">
+      <button id="mode-free" class="mode-card">
+        <div class="mode-icon">💬</div>
+        <div class="mode-name">Conversation libre</div>
+        <p class="mode-desc">Discute sans contrainte avec un personnage, dans le décor de ton choix.</p>
+        <span class="char-cta">Démarrer →</span>
+      </button>
+      <button id="mode-course" class="mode-card">
+        <div class="mode-icon">🎓</div>
+        <div class="mode-name">Cours d'anglais</div>
+        <p class="mode-desc">Des leçons adaptées à ton niveau, avec un prof qui suit ta progression.</p>
+        <span class="char-cta">Voir les cours →</span>
+      </button>
+      <button id="mode-game" class="mode-card">
+        <div class="mode-icon">🎮</div>
+        <div class="mode-name">Mini-jeux</div>
+        <p class="mode-desc">Quiz éclair de vocabulaire et d'expressions, chrono et combos. Addictif !</p>
+        <span class="char-cta">Jouer →</span>
+      </button>
+    </div>
+
+    <footer class="foot">Conversation vocale temps réel · propulsé par OpenAI Realtime</footer>
+  </section>
+
+  <!-- ================= HOME (conversation libre) ================= -->
+  <section id="screen-home" class="screen">
+    <button id="home-back" class="ghost-btn">← Menu</button>
+    <header class="hero">
+      <div class="section-label">Conversation libre</div>
+      <h1 class="hero-title">Avec qui parler ?</h1>
+    </header>
+
+    <div id="bonus-guest" class="bonus-guest" hidden></div>
+
+    <div class="section-label">Choisissez votre partenaire</div>
+    <div id="character-cards" class="char-cards"></div>
+
+    <footer class="foot">Conversation vocale temps réel · propulsé par OpenAI Realtime</footer>
+  </section>
+
+  <!-- ================= SETUP ================= -->
+  <section id="screen-setup" class="screen">
+    <button id="setup-back" class="ghost-btn">← Changer de partenaire</button>
+
+    <div class="setup-head">
+      <div class="setup-avatar"><img id="setup-avatar" alt="avatar" /></div>
+      <div>
+        <div class="section-label">Votre session avec</div>
+        <h2 id="setup-charname">—</h2>
+      </div>
+    </div>
+
+    <div class="setup-block">
+      <div class="block-title">1 · Votre niveau</div>
+      <div id="level-pills" class="pills"></div>
+    </div>
+
+    <div class="setup-block">
+      <div class="block-title">2 · Choisissez le décor</div>
+      <div id="decor-cards" class="decor-cards"></div>
+    </div>
+
+    <button id="start-btn" class="primary-btn" disabled>🚀 Démarrer la conversation</button>
+  </section>
+
+  <!-- ================= CALL ================= -->
+  <section id="screen-call" class="screen call">
+    <div class="call-topbar">
+      <span id="call-place" class="call-place">—</span>
+      <button id="end-btn" class="end-btn">🔴 Quitter</button>
+    </div>
+
+    <div class="call-stage">
+      <div id="call-avatar-ring" class="avatar-ring">
+        <img id="call-avatar" alt="avatar" />
+      </div>
+      <!-- Égaliseur : ses barres dansent avec le volume réel de la voix de l'IA. -->
+      <div id="voice-eq" class="voice-eq"></div>
+      <h2 id="call-charname">—</h2>
+      <div id="call-status" class="call-status">Connexion…</div>
+      <div id="mic-indicator" class="mic-indicator">
+        <span></span><span></span><span></span><span></span><span></span>
+        <small>Vous parlez</small>
+      </div>
+      <div id="call-debug" class="call-debug"></div>
+    </div>
+
+    <div class="transcript-wrap">
+      <div class="transcript-title">Sous-titres</div>
+      <div id="transcript" class="transcript"></div>
+    </div>
+  </section>
+
+  <!-- ================= SUMMARY ================= -->
+  <section id="screen-summary" class="screen">
+    <div class="summary-head">
+      <div class="section-label">Bilan de la conversation</div>
+      <h1 class="summary-title">Bien joué ! 👏</h1>
+    </div>
+
+    <div id="summary-loading" class="summary-loading">
+      <div class="spinner"></div>
+      <p>Analyse de votre conversation…</p>
+    </div>
+
+    <div id="summary-content" class="summary-content" hidden>
+      <div class="score-card">
+        <div class="score-gauge">
+          <svg viewBox="0 0 120 120">
+            <circle class="gauge-bg" cx="60" cy="60" r="52" />
+            <circle id="gauge-arc" class="gauge-arc" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="score-value"><span id="score-num">0</span><small>/10</small></div>
+        </div>
+        <div class="score-side">
+          <div class="block-title">Votre note</div>
+          <p id="score-justif" class="score-justif"></p>
+        </div>
+      </div>
+
+      <div class="summary-block">
+        <div class="block-title">📝 Résumé</div>
+        <p id="summary-text"></p>
+      </div>
+
+      <div class="summary-cols">
+        <div class="summary-block">
+          <div class="block-title green">✅ Points forts</div>
+          <ul id="summary-strengths"></ul>
+        </div>
+        <div class="summary-block">
+          <div class="block-title orange">🎯 À améliorer</div>
+          <ul id="summary-improvements"></ul>
+        </div>
+      </div>
+
+      <div class="summary-actions">
+        <button id="replay-btn" class="primary-btn">🔁 Rejouer</button>
+        <button id="home-btn" class="ghost-btn big">🏠 Accueil</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= COURSE HOME (choix du prof) ================= -->
+  <section id="screen-course-home" class="screen">
+    <button id="course-back" class="ghost-btn">← Menu</button>
+    <header class="hero">
+      <div class="section-label">Cours d'anglais</div>
+      <h1 class="hero-title">Vos cours</h1>
+    </header>
+
+    <!-- Surnom fun (affiché dès qu'un cours a été fait) -->
+    <div id="nickname-banner" class="nickname-banner" hidden>
+      <span class="nick-emoji">🏅</span>
+      <div>
+        <div class="nick-name" id="nick-name">—</div>
+        <div class="nick-reason" id="nick-reason"></div>
+      </div>
+    </div>
+
+    <!-- Reprendre la dernière leçon en pause (n'apparaît que s'il y en a une) -->
+    <button id="resume-course-home" class="resume-bar" hidden>
+      <div class="rb-avatar"><img id="rb-avatar-home" alt="" /></div>
+      <div class="rb-body">
+        <div class="rb-tag">▶️ Reprendre votre cours</div>
+        <div class="rb-title" id="rb-title-home">—</div>
+        <div class="rb-sub" id="rb-sub-home"></div>
+      </div>
+      <span class="rb-cta">Continuer →</span>
+    </button>
+
+    <div class="section-label">Choisissez votre professeur</div>
+    <div id="course-character-cards" class="char-cards"></div>
+
+    <div class="course-foot">
+      <button id="course-progress-btn" class="pg-cta">📊 Ma progression</button>
+      <button id="course-reset" class="ghost-btn reset-link">↺ Réinitialiser ma progression</button>
+    </div>
+  </section>
+
+  <!-- ================= PROGRESSION (tableau de bord) ================= -->
+  <section id="screen-progress" class="screen">
+    <button id="progress-back" class="ghost-btn">← Cours</button>
+    <header class="hero">
+      <div class="section-label">Tableau de bord</div>
+      <h1 class="hero-title">📊 Ma progression</h1>
+    </header>
+
+    <div id="progress-nickname" class="nickname-banner" hidden>
+      <span class="nick-emoji">🏅</span>
+      <div>
+        <div class="nick-name" id="pg-nick-name">—</div>
+        <div class="nick-reason" id="pg-nick-reason"></div>
+      </div>
+    </div>
+
+    <div class="gameover-stats">
+      <div class="go-stat"><div class="go-num" id="pg-validated">0</div><div class="go-label">Leçons validées</div></div>
+      <div class="go-stat"><div class="go-num" id="pg-avg">—</div><div class="go-label">Note moyenne</div></div>
+      <div class="go-stat"><div class="go-num" id="pg-started">0</div><div class="go-label">Cours entamés</div></div>
+    </div>
+
+    <div id="progress-courses" class="progress-courses"></div>
+  </section>
+
+  <!-- ================= COURSE SETUP (niveau + durée) ================= -->
+  <section id="screen-course-setup" class="screen">
+    <button id="course-setup-back" class="ghost-btn">← Changer de professeur</button>
+
+    <div class="setup-head">
+      <div class="setup-avatar"><img id="course-setup-avatar" alt="avatar" /></div>
+      <div>
+        <div class="section-label">Cours avec</div>
+        <h2 id="course-setup-charname">—</h2>
+      </div>
+    </div>
+
+    <div class="setup-block">
+      <div class="block-title">1 · Votre niveau</div>
+      <div id="course-level-pills" class="pills"></div>
+    </div>
+
+    <!-- Sélecteur de thème : affiché uniquement pour la prof de vocabulaire (Lucy) -->
+    <div id="course-theme-block" class="setup-block" hidden>
+      <div class="block-title">🗂️ Thème du jour</div>
+      <div id="course-theme-pills" class="pills"></div>
+    </div>
+
+    <div class="setup-block">
+      <div class="block-title">2 · Durée du cours</div>
+      <div id="course-duration-pills" class="pills"></div>
+    </div>
+
+    <!-- État du cours : reprise possible, leçons déjà validées -->
+    <div id="course-state-box" class="course-state" hidden></div>
+
+    <button id="course-start-btn" class="primary-btn">🎓 Commencer le cours</button>
+  </section>
+
+  <!-- ================= LESSON (la leçon en cours) ================= -->
+  <section id="screen-lesson" class="screen call">
+    <div class="call-topbar">
+      <span id="lesson-level" class="call-place">—</span>
+      <span id="lesson-timer" class="lesson-timer">00:00 / 00:00</span>
+      <button id="lesson-quit-btn" class="end-btn">⏸️ Quitter</button>
+    </div>
+
+    <div class="call-stage">
+      <div id="lesson-avatar-ring" class="avatar-ring">
+        <img id="lesson-avatar" alt="avatar" />
+      </div>
+      <div id="lesson-voice-eq" class="voice-eq"></div>
+      <h2 id="lesson-charname">—</h2>
+      <div id="lesson-status" class="call-status">Connexion…</div>
+      <div id="lesson-debug" class="call-debug"></div>
+      <!-- Apparaît une fois la durée cible atteinte -->
+      <button id="lesson-finish-btn" class="primary-btn lesson-finish" hidden>✅ Terminer & valider la leçon</button>
+    </div>
+
+    <div class="transcript-wrap">
+      <div class="transcript-title">Sous-titres</div>
+      <div id="lesson-transcript" class="transcript"></div>
+    </div>
+  </section>
+
+  <!-- ================= LESSON SUMMARY (bilan de leçon) ================= -->
+  <section id="screen-lesson-summary" class="screen">
+    <div class="summary-head">
+      <div class="section-label">Bilan de la leçon</div>
+      <h1 id="lesson-verdict-title" class="summary-title">—</h1>
+    </div>
+
+    <div id="lesson-summary-loading" class="summary-loading">
+      <div class="spinner"></div>
+      <p>Évaluation de la leçon…</p>
+    </div>
+
+    <div id="lesson-summary-content" class="summary-content" hidden>
+      <div class="score-card">
+        <div class="score-gauge">
+          <svg viewBox="0 0 120 120">
+            <circle class="gauge-bg" cx="60" cy="60" r="52" />
+            <circle id="lesson-gauge-arc" class="gauge-arc" cx="60" cy="60" r="52" />
+          </svg>
+          <div class="score-value"><span id="lesson-score-num">0</span><small>/10</small></div>
+        </div>
+        <div class="score-side">
+          <div id="lesson-verdict-badge" class="verdict-badge">—</div>
+          <p id="lesson-score-justif" class="score-justif"></p>
+        </div>
+      </div>
+
+      <!-- Surnom révélé -->
+      <div id="lesson-nickname" class="nickname-banner reveal" hidden>
+        <span class="nick-emoji">🏅</span>
+        <div>
+          <div class="nick-name" id="lesson-nick-name">—</div>
+          <div class="nick-reason" id="lesson-nick-reason"></div>
+        </div>
+      </div>
+
+      <div class="summary-block">
+        <div class="block-title">📝 Résumé</div>
+        <p id="lesson-summary-text"></p>
+      </div>
+
+      <div class="summary-cols">
+        <div class="summary-block">
+          <div class="block-title green">✅ Acquis</div>
+          <ul id="lesson-acquired"></ul>
+        </div>
+        <div class="summary-block">
+          <div class="block-title orange">🎯 À retravailler</div>
+          <ul id="lesson-toreview"></ul>
+        </div>
+      </div>
+
+      <!-- Carte de vocabulaire du jour : affichée uniquement pour le cours de vocabulaire -->
+      <div id="lesson-vocab" class="vocab-card" hidden>
+        <div class="block-title">🗂️ Vos mots du jour</div>
+        <div id="lesson-vocab-list" class="vocab-list"></div>
+      </div>
+
+      <div class="summary-actions">
+        <button id="lesson-replay-btn" class="primary-btn">🎓 Continuer les cours</button>
+        <button id="lesson-home-btn" class="ghost-btn big">🏠 Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ASSESSMENT (test de niveau, 10 min figées) ================= -->
+  <section id="screen-assessment" class="screen call">
+    <div class="call-topbar">
+      <span id="assess-place" class="call-place">🎯 Test de niveau</span>
+      <span id="assess-timer" class="lesson-timer">00:00 / 10:00</span>
+      <button id="assess-quit-btn" class="end-btn">✕ Abandonner</button>
+    </div>
+
+    <div class="call-stage">
+      <div id="assess-avatar-ring" class="avatar-ring">
+        <img id="assess-avatar" alt="avatar" />
+      </div>
+      <div id="assess-voice-eq" class="voice-eq"></div>
+      <h2 id="assess-charname">—</h2>
+      <div id="assess-status" class="call-status">Connexion…</div>
+      <div id="assess-debug" class="call-debug"></div>
+      <div class="assess-hint">Réponds le plus naturellement possible : l'examen dure 10 minutes, puis ton niveau s'affiche.</div>
+    </div>
+
+    <div class="transcript-wrap">
+      <div class="transcript-title">Sous-titres</div>
+      <div id="assess-transcript" class="transcript"></div>
+    </div>
+  </section>
+
+  <!-- ================= ASSESSMENT SUMMARY (curseur de niveau) ================= -->
+  <section id="screen-assessment-summary" class="screen">
+    <div class="summary-head">
+      <div class="section-label">Bilan de l'évaluation</div>
+      <h1 class="summary-title">Ton niveau d'anglais 🎯</h1>
+    </div>
+
+    <div id="assess-summary-loading" class="summary-loading">
+      <div class="spinner"></div>
+      <p>Estimation de ton niveau…</p>
+    </div>
+
+    <div id="assess-summary-content" class="summary-content" hidden>
+      <!-- Curseur : l'échelle Débutant → C2 avec un marqueur sur le niveau estimé -->
+      <div class="level-cursor">
+        <div id="level-scale" class="level-scale"></div>
+        <div class="level-verdict">
+          Niveau estimé : <span id="assess-level-label" class="level-pill-big">—</span>
+        </div>
+      </div>
+
+      <div class="summary-block">
+        <div class="block-title">📝 Compte rendu</div>
+        <p id="assess-summary-text"></p>
+        <p id="assess-justif" class="score-justif"></p>
+      </div>
+
+      <div class="summary-cols">
+        <div class="summary-block">
+          <div class="block-title green">✅ Points forts</div>
+          <ul id="assess-strengths"></ul>
+        </div>
+        <div class="summary-block">
+          <div class="block-title orange">🎯 À travailler</div>
+          <ul id="assess-improvements"></ul>
+        </div>
+      </div>
+
+      <div id="assess-reco-box" class="course-state" style="margin-top:18px"></div>
+
+      <div class="summary-actions">
+        <button id="assess-courses-btn" class="primary-btn">🎓 Voir les cours</button>
+        <button id="assess-retake-btn" class="ghost-btn big">🔁 Repasser</button>
+        <button id="assess-home-btn" class="ghost-btn big">🏠 Menu</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GAMES HUB (choix du jeu) ================= -->
+  <section id="screen-games-hub" class="screen">
+    <button id="hub-back" class="ghost-btn">← Menu</button>
+    <header class="hero">
+      <div class="section-label">Mini-jeux</div>
+      <h1 class="hero-title">Choisis ton jeu</h1>
+    </header>
+    <div class="mode-cards">
+      <button id="hub-quiz" class="mode-card">
+        <div class="mode-icon">🇺🇸</div>
+        <div class="mode-name">Quiz expressions</div>
+        <p class="mode-desc">Expressions &amp; slang américains. Combos, vies, explications. Comprends les vraies tournures !</p>
+        <span class="char-cta">Jouer →</span>
+      </button>
+      <button id="hub-rush" class="mode-card">
+        <div class="mode-icon">🏃</div>
+        <div class="mode-name">Word Rush</div>
+        <p class="mode-desc">Vocabulaire du quotidien par thème, chrono 60 s, combos qui rajoutent du temps. Arcade !</p>
+        <span class="char-cta">Jouer →</span>
+      </button>
+      <button id="hub-errors" class="mode-card">
+        <div class="mode-icon">📒</div>
+        <div class="mode-name">Carnet d'erreurs</div>
+        <p class="mode-desc">Révise ce que tu as raté en jeu, au bon moment (répétition espacée). La clé pour progresser !</p>
+        <span class="char-cta">Réviser →</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= GAME HOME (Quiz expressions : choix niveau) ================= -->
+  <section id="screen-game-home" class="screen">
+    <button id="game-back" class="ghost-btn">← Jeux</button>
+    <header class="hero">
+      <div class="section-label">Quiz expressions américaines</div>
+      <h1 class="hero-title">🇺🇸 Expressions &amp; slang</h1>
+      <p class="hero-sub">Réponds vite, enchaîne les combos, garde tes 3 vies !</p>
+    </header>
+
+    <div class="setup-block">
+      <div class="block-title">Choisis ton niveau</div>
+      <div id="game-level-pills" class="pills"></div>
+    </div>
+
+    <div id="game-best" class="game-best" hidden></div>
+    <button id="game-play-btn" class="primary-btn">🚀 Jouer</button>
+  </section>
+
+  <!-- ================= WORD RUSH HOME (niveau + thème) ================= -->
+  <section id="screen-wordrush-home" class="screen">
+    <button id="wr-back" class="ghost-btn">← Jeux</button>
+    <header class="hero">
+      <div class="section-label">Word Rush · vocabulaire</div>
+      <h1 class="hero-title">🏃 Word Rush</h1>
+      <p class="hero-sub">60 secondes, un max de bonnes réponses. Les combos rajoutent du temps !</p>
+    </header>
+
+    <div class="setup-block">
+      <div class="block-title">1 · Niveau</div>
+      <div id="wr-level-pills" class="pills"></div>
+    </div>
+    <div class="setup-block">
+      <div class="block-title">2 · Thème</div>
+      <div id="wr-theme-grid" class="wr-theme-grid"></div>
+    </div>
+
+    <div id="wr-best" class="game-best" hidden></div>
+    <button id="wr-play-btn" class="primary-btn" disabled>🚀 Go !</button>
+  </section>
+
+  <!-- ================= WORD RUSH (jeu) ================= -->
+  <section id="screen-wordrush" class="screen">
+    <div class="game-hud">
+      <button id="wr-quit" class="ghost-btn">← Quitter</button>
+      <div class="game-score-wrap"><span id="wr-score">0</span> pts <span id="wr-combo" class="game-combo"></span></div>
+      <div id="wr-time" class="wr-time">1:00</div>
+    </div>
+    <div class="game-timer-wrap"><div id="wr-timer-bar" class="game-timer-bar"></div></div>
+    <div class="game-card">
+      <div class="game-card-top">
+        <span id="wr-theme-label" class="game-qtype">—</span>
+        <span id="wr-count" class="game-progress"></span>
+      </div>
+      <h2 id="wr-prompt" class="game-prompt">—</h2>
+      <div id="wr-choices" class="game-choices"></div>
+      <div id="wr-feedback" class="game-feedback"></div>
+    </div>
+  </section>
+
+  <!-- ================= GAME (le quiz) ================= -->
+  <section id="screen-game" class="screen">
+    <div class="game-hud">
+      <button id="game-quit" class="ghost-btn">← Quitter</button>
+      <div class="game-score-wrap">
+        <span id="game-score">0</span> pts
+        <span id="game-combo" class="game-combo"></span>
+      </div>
+      <div id="game-lives" class="game-lives"></div>
+    </div>
+
+    <div class="game-timer-wrap"><div id="game-timer-bar" class="game-timer-bar"></div></div>
+
+    <div class="game-card">
+      <div class="game-card-top">
+        <span id="game-qtype" class="game-qtype">—</span>
+        <span id="game-progress" class="game-progress">—</span>
+      </div>
+      <h2 id="game-prompt" class="game-prompt">—</h2>
+      <div id="game-choices" class="game-choices"></div>
+      <div id="game-feedback" class="game-feedback"></div>
+    </div>
+  </section>
+
+  <!-- ================= GAME OVER ================= -->
+  <section id="screen-game-over" class="screen">
+    <div class="summary-head">
+      <div class="section-label">Quiz terminé</div>
+      <h1 id="game-over-title" class="summary-title">—</h1>
+    </div>
+
+    <div class="gameover-stats">
+      <div class="go-stat"><div class="go-num" id="go-score">0</div><div class="go-label" id="go-label-1">Score</div></div>
+      <div class="go-stat"><div class="go-num" id="go-best">0</div><div class="go-label" id="go-label-2">Meilleur</div></div>
+      <div class="go-stat"><div class="go-num" id="go-acc">0%</div><div class="go-label" id="go-label-3">Réussite</div></div>
+    </div>
+
+    <div class="summary-block">
+      <div class="block-title">📚 Récap des questions</div>
+      <ul id="go-recap" class="go-recap"></ul>
+    </div>
+
+    <div class="summary-actions">
+      <button id="game-replay" class="primary-btn">🔁 Rejouer</button>
+      <button id="game-menu" class="ghost-btn big">🏠 Menu</button>
+    </div>
+  </section>
+
+  <!-- ================= CARNET D'ERREURS ================= -->
+  <section id="screen-errorbook" class="screen">
+    <button id="eb-back" class="ghost-btn">← Jeux</button>
+    <header class="hero">
+      <div class="section-label">Carnet d'erreurs</div>
+      <h1 class="hero-title">📒 Mes erreurs</h1>
+      <p class="hero-sub">Tes erreurs des jeux reviennent au bon moment pour bien les ancrer.</p>
+    </header>
+
+    <div class="gameover-stats">
+      <div class="go-stat"><div class="go-num" id="eb-due">0</div><div class="go-label">À réviser</div></div>
+      <div class="go-stat"><div class="go-num" id="eb-active">0</div><div class="go-label">En cours</div></div>
+      <div class="go-stat"><div class="go-num" id="eb-mastered">0</div><div class="go-label">Maîtrisées</div></div>
+    </div>
+
+    <div id="eb-empty" class="progress-empty" hidden>
+      Aucune erreur enregistrée pour l'instant. Joue au Quiz ou à Word Rush — tes erreurs atterriront ici. 🎮
+    </div>
+    <button id="eb-review-btn" class="primary-btn">🧠 Réviser maintenant</button>
+
+    <div id="eb-themes" class="eb-themes" hidden></div>
+  </section>
+
+  <!-- ================= RÉVISION (carnet) ================= -->
+  <section id="screen-review" class="screen">
+    <div class="game-hud">
+      <button id="rv-quit" class="ghost-btn">← Quitter</button>
+      <div class="game-score-wrap">📒 Révision</div>
+      <div id="rv-count" class="game-progress">—</div>
+    </div>
+    <div class="game-card">
+      <div class="game-card-top">
+        <span id="rv-qtype" class="game-qtype">—</span>
+        <span id="rv-box" class="game-progress"></span>
+      </div>
+      <h2 id="rv-prompt" class="game-prompt">—</h2>
+      <div id="rv-choices" class="game-choices"></div>
+      <div id="rv-feedback" class="game-feedback"></div>
+    </div>
+  </section>
+
+  <!-- ================= PROFIL (gamification) ================= -->
+  <section id="screen-profile" class="screen">
+    <button id="profile-back" class="ghost-btn">← Menu</button>
+    <header class="hero">
+      <div class="section-label">Profil</div>
+      <h1 class="hero-title">🏆 Mon profil</h1>
+    </header>
+
+    <div class="level-card">
+      <div class="level-big">Niveau <span id="pf-level">1</span></div>
+      <div class="level-bar"><div id="pf-bar-fill" class="level-bar-fill"></div></div>
+      <div id="pf-xp-text" class="level-xp">0 XP</div>
+    </div>
+
+    <div class="gameover-stats">
+      <div class="go-stat"><div class="go-num" id="pf-streak">0</div><div class="go-label">🔥 Série (jours)</div></div>
+      <div class="go-stat"><div class="go-num" id="pf-best">0</div><div class="go-label">Record</div></div>
+      <div class="go-stat"><div class="go-num" id="pf-mastered">0</div><div class="go-label">Erreurs maîtrisées</div></div>
+    </div>
+
+    <div class="section-label">Réglages</div>
+    <button id="pf-sound-toggle" class="setting-row" type="button">
+      <span class="setting-label"><span id="pf-sound-icon">🔊</span> Sons &amp; vibrations</span>
+      <span id="pf-sound-state" class="setting-state">Activés</span>
+    </button>
+
+    <div class="section-label">Badges</div>
+    <div id="pf-badges" class="badges-grid"></div>
+  </section>
+
+  <!-- Overlay "Connexion perdue" : filet de sécurité réseau, masqué par défaut.
+       Au-dessus de tout (z-index élevé). Boutons remplis dynamiquement par app.js. -->
+  <div id="disconnect-overlay" class="disconnect-overlay" hidden>
+    <div class="disconnect-card">
+      <div id="disconnect-icon" class="disconnect-icon">📡</div>
+      <h2 id="disconnect-title" class="disconnect-title">Connexion perdue</h2>
+      <p id="disconnect-msg" class="disconnect-msg"></p>
+      <div class="disconnect-actions">
+        <button id="disconnect-retry" class="primary-btn disconnect-btn"></button>
+        <button id="disconnect-finish" class="ghost-btn big disconnect-btn"></button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js?v=42"></script>
+</body>
+</html>

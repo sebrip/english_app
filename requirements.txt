@@ -1,0 +1,14 @@
+# English SpeakApp — dépendances de l'application (Python 3.11+)
+# Installer :  pip install -r requirements.txt
+#
+# tomllib est dans la bibliothèque standard depuis Python 3.11 (pas de paquet).
+
+# --- Runtime du serveur ---
+starlette==1.2.1
+uvicorn==0.49.0
+requests==2.34.2
+
+# --- Génération des assets (avatars, décors, QR code) — optionnel ---
+# Décommentez si vous voulez régénérer les images (déjà fournies dans frontend/).
+# pillow==12.2.0
+# qrcode==8.2

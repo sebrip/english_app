@@ -1,0 +1,51 @@
+# =============================================================
+#  English SpeakApp — .gitignore
+#  Objectif n°1 : ne JAMAIS versionner de secret ni de donnée perso.
+# =============================================================
+
+# --- SECRETS (CRITIQUE — ne jamais committer) ---
+.streamlit/secrets.toml
+.env
+.env.*
+*.secret
+*.key
+
+# --- Environnements Python ---
+venv/
+venv_old_py311/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# --- Données utilisateur (privées : progression, surnom, carnet d'erreurs) ---
+data/*.json
+data/*.tmp
+data/progress.corrupt-*.json
+data/progress.backup-*.json
+
+# --- Artefacts de test / outillage dev ---
+.playwright-mcp/
+test-*.png
+*.tmp
+
+# --- Captures d'écran à la racine (artefacts, non liés à l'app) ---
+/0*.png
+/1*.png
+qr_mobile.png
+
+# --- Vidéo de démo : fichiers lourds / régénérables (gardés : .mp4, .srt, scripts) ---
+demo_video/audit/
+demo_video/slides_raw/
+demo_video/slides_final/
+demo_video/__pycache__/
+demo_video/music.wav
+demo_video/check_mobile.png
+
+# --- OS / éditeurs ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
