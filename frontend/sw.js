@@ -7,7 +7,7 @@
  * Le cache-busting "?v=N" des fichiers fait que chaque version a sa propre URL :
  * bumper la version récupère naturellement le nouveau fichier.
  */
-const SW_VERSION = "v9";
+const SW_VERSION = "v11";
 const CACHE = "speakapp-" + SW_VERSION;
 const APP_SHELL = [
   "/",

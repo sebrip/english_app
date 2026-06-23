@@ -481,6 +481,23 @@ body {
   letter-spacing: .3px;
 }
 
+/* ===== Cartes de profs SPÉCIALISÉS : une couleur d'accent par spécialité =====
+ * débutants -> vert · vocabulaire -> bleu · examinateur -> ambre.
+ * Les profs de conversation générale gardent la carte neutre (accent orange au survol). */
+.char-card--beginner { border-color: rgba(61,220,132,0.45); background: rgba(61,220,132,0.07); }
+.char-card--beginner:hover { border-color: var(--green); background: rgba(61,220,132,0.13); }
+.char-card--beginner .char-badge { background: rgba(61,220,132,0.18); color: var(--green); }
+.char-card--beginner .char-cta { color: var(--green); }
+
+.char-card--vocab { border-color: rgba(108,139,255,0.45); background: rgba(108,139,255,0.07); }
+.char-card--vocab:hover { border-color: var(--accent-2); background: rgba(108,139,255,0.13); }
+.char-card--vocab .char-cta { color: var(--accent-2); }
+
+.char-card--exam { border-color: rgba(245,185,77,0.45); background: rgba(245,185,77,0.07); }
+.char-card--exam:hover { border-color: #f5b94d; background: rgba(245,185,77,0.13); }
+.char-card--exam .char-badge { background: rgba(245,185,77,0.18); color: #f5b94d; }
+.char-card--exam .char-cta { color: #f5b94d; }
+
 /* ===== Carte de vocabulaire du jour (bilan de leçon) ===== */
 .vocab-card {
   max-width: 720px; margin: 22px auto 0; background: var(--card); border: 1px solid var(--card-border);

@@ -109,6 +109,24 @@ SITUATIONS = {
             "professional and encouraging."
         ),
     },
+    "school": {
+        "label": "🏫 School",
+        "decor": "/decors/school.png",
+        "context": (
+            "The conversation takes place in a friendly primary-school classroom. The AI acts "
+            "as a kind schoolteacher helping the learner practice: ask simple questions about "
+            "school, lessons, friends and daily life, and gently encourage them to speak."
+        ),
+    },
+    "supermarket": {
+        "label": "🛒 Supermarket",
+        "decor": "/decors/supermarket.png",
+        "context": (
+            "The conversation takes place in a busy supermarket. The AI acts as a helpful store "
+            "employee: help the customer find products, talk about groceries, prices and aisles, "
+            "answer questions and handle the checkout."
+        ),
+    },
 }
 
 # Chaque personnage = une "voix" OpenAI + une "personality" (= les instructions
@@ -183,6 +201,45 @@ CHARACTERS = {
             "follow-up questions, and push the learner to express themselves better. "
             "Professional, focused and motivating — energetic but never cold or rude. "
             "Keep answers short."
+        ),
+    },
+    # Maîtresse d'école FRANÇAISE pour GRANDS DÉBUTANTS. Elle parle SURTOUT français
+    # pour enseigner les tout premiers mots d'anglais. "beginner_only" => seul le
+    # niveau "Débutant" est proposé quand on la choisit (cours + conversation libre).
+    "sophie": {
+        "name": "Sophie",
+        "title": "La maîtresse d'école",
+        "avatar": "/avatars/sophie.png",
+        "voice": "marin",  # voix féminine douce et naturelle, à l'aise en français
+        "beginner_only": True,
+        "tagline": "Maîtresse d'école qui parle français. Pour les VRAIS débutants : tes tout premiers mots d'anglais, en douceur.",
+        "personality": (
+            "You are Sophie, a kind and very patient French primary-school teacher "
+            "('une maîtresse d'école'). You help ABSOLUTE BEGINNERS take their very first "
+            "steps in English. You speak PRIMARILY IN FRENCH — warm, slow and reassuring, "
+            "exactly like a caring teacher with a young pupil. Introduce English ONE simple "
+            "word or very short phrase at a time: say it slowly in English, then immediately "
+            "explain what it means IN FRENCH and gently invite the learner to repeat it. "
+            "Praise every single attempt warmly in French ('Très bien !', 'Bravo !', "
+            "'C'est parfait !', 'Tu progresses !'). Never overwhelm them: keep the English to "
+            "single words or 2-3 word phrases. If the learner seems lost, reassure them in "
+            "French and try again even more simply. Keep your turns short."
+        ),
+    },
+    # Ado / jeune gamer : anglais actuel, slang de jeux vidéo, plein d'énergie.
+    "kai": {
+        "name": "Kai",
+        "title": "Le gamer",
+        "avatar": "/avatars/kai.png",
+        "voice": "cedar",  # voix masculine jeune et fraîche
+        "tagline": "Jeune gamer/streamer de Californie. Anglais ultra actuel, slang de jeux vidéo, énergie à fond.",
+        "personality": (
+            "You are Kai, an upbeat 19-year-old gamer and streamer from California. "
+            "You speak fast, casual, modern English packed with gaming and internet slang "
+            "('let's go!', 'GG', 'that's so OP', 'clutch', 'no cap', 'pog', 'easy W', 'rage quit'). "
+            "You are super energetic, hyped and friendly, like chatting with a buddy on a Discord call. "
+            "React big: celebrate loudly when the learner does well, joke around, keep the vibe fun "
+            "and positive. Always stay encouraging and good-natured, never mean. Keep answers short."
         ),
     },
     # Prof spécialisée VOCABULAIRE (mode cours uniquement). "course_only" => absente
@@ -376,6 +433,8 @@ async def get_config(request: Request) -> JSONResponse:
                     "course_only": bool(c.get("course_only")),
                     "vocab_coach": bool(c.get("vocab_coach")),
                     "examiner": bool(c.get("examiner")),
+                    # beginner_only => le front ne propose QUE le niveau "Débutant".
+                    "beginner_only": bool(c.get("beginner_only")),
                 }
                 for cid, c in CHARACTERS.items()
                 if not c.get("hidden")  # l'invité surprise n'apparaît pas dans la liste normale
@@ -457,6 +516,9 @@ async def create_token(request: Request) -> JSONResponse:
     if character is None or situation is None:
         return JSONResponse({"error": "Personnage ou décor inconnu."}, status_code=400)
     if level not in LEVELS:
+        level = "beginner"
+    # Profs réservés aux grands débutants (ex: Sophie) : niveau forcé sur "Débutant".
+    if character.get("beginner_only"):
         level = "beginner"
 
     instructions = build_instructions(character, situation, level)
@@ -934,6 +996,9 @@ async def create_course_token(request: Request) -> JSONResponse:
     if character is None:
         return JSONResponse({"error": "Personnage inconnu."}, status_code=400)
     if level not in LEVELS:
+        level = "beginner"
+    # Profs réservés aux grands débutants (ex: Sophie) : niveau forcé sur "Débutant".
+    if character.get("beginner_only"):
         level = "beginner"
     target = normalize_target(body.get("target_minutes", 10))
 

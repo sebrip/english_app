@@ -596,18 +596,29 @@ async function loadConfig() {
   if (david && arAvatar) arAvatar.src = david.avatar;
 }
 
+// Spécialité d'un prof -> classe de couleur de carte + texte du badge.
+// Les profs de conversation générale (sans spécialité) gardent une carte neutre.
+function specialtyOf(c) {
+  if (c.beginner_only) return { cls: "char-card--beginner", badge: "🐣 Spécial grands débutants" };
+  if (c.vocab_coach)   return { cls: "char-card--vocab",    badge: "🗂️ Vocabulaire par thème" };
+  if (c.examiner)      return { cls: "char-card--exam",     badge: "🎓 Test de niveau · 10 min" };
+  return { cls: "", badge: "" };
+}
+
 // Fabrique dynamiquement une carte cliquable par personnage sur l'écran d'accueil.
 function renderCharacters() {
   const wrap = document.getElementById("character-cards");
   wrap.innerHTML = "";
   for (const [id, c] of Object.entries(state.config.characters)) {
     if (c.course_only) continue; // les profs réservés aux cours (ex: Lucy) n'apparaissent pas ici
+    const sp = specialtyOf(c);
     const card = document.createElement("button");
-    card.className = "char-card";
+    card.className = "char-card" + (sp.cls ? " " + sp.cls : "");
     card.innerHTML = `
       <div class="char-avatar"><img src="${c.avatar}" alt="${c.name}"></div>
       <div class="char-name">${c.name}</div>
       <div class="char-title">${c.title}</div>
+      ${sp.badge ? `<span class="char-badge">${sp.badge}</span>` : ""}
       <p class="char-tagline">${c.tagline}</p>
       <span class="char-cta">Parler avec ${c.name} →</span>
     `;
@@ -674,10 +685,14 @@ function goToSetup() {
   // On crée une pastille par niveau ; cliquer mémorise l'id dans state.level.
   const levelWrap = document.getElementById("level-pills");
   levelWrap.innerHTML = "";
+  // Profs réservés aux grands débutants (ex: Sophie) : un seul niveau proposé.
+  const lvls = c.beginner_only
+    ? state.config.levels.filter((l) => l.id === "beginner")
+    : state.config.levels;
   // Pré-sélection sur le niveau évalué par David (curseur), sinon premier niveau.
-  const _lvlIds = state.config.levels.map((l) => l.id);
-  state.level = _lvlIds.includes(state.assessedLevel) ? state.assessedLevel : state.config.levels[0].id;
-  state.config.levels.forEach((lvl) => {
+  const _lvlIds = lvls.map((l) => l.id);
+  state.level = _lvlIds.includes(state.assessedLevel) ? state.assessedLevel : lvls[0].id;
+  lvls.forEach((lvl) => {
     const pill = document.createElement("button");
     pill.className = "pill" + (lvl.id === state.level ? " selected" : "");
     pill.textContent = lvl.label;
@@ -1138,20 +1153,15 @@ function renderCourseCharacters() {
     // avant, il est mis en avant sur l'accueil (carte brillante) ; après, il se range
     // ici avec les autres profs. Un clic relance le test (et non un cours classique).
     if (c.examiner && !assessed) continue;
+    const sp = specialtyOf(c); // couleur de carte + badge selon la spécialité
     const card = document.createElement("button");
-    card.className = "char-card";
-    // Petit badge : prof de vocabulaire, ou examinateur (test de niveau).
-    const badge = c.vocab_coach
-      ? `<span class="char-badge">🗂️ Vocabulaire par thème</span>`
-      : c.examiner
-      ? `<span class="char-badge">🎓 Test de niveau · 10 min</span>`
-      : "";
+    card.className = "char-card" + (sp.cls ? " " + sp.cls : "");
     const cta = c.examiner ? "Repasser le test →" : `Cours avec ${c.name} →`;
     card.innerHTML = `
       <div class="char-avatar"><img src="${c.avatar}" alt="${c.name}"></div>
       <div class="char-name">${c.name}</div>
       <div class="char-title">${c.title}</div>
-      ${badge}
+      ${sp.badge ? `<span class="char-badge">${sp.badge}</span>` : ""}
       <p class="char-tagline">${c.tagline}</p>
       <span class="char-cta">${cta}</span>`;
     card.addEventListener("click", () => {
@@ -1201,9 +1211,13 @@ function goToCourseSetup() {
   // Niveaux — pré-sélection sur le niveau évalué par David (curseur), si dispo.
   const levelWrap = document.getElementById("course-level-pills");
   levelWrap.innerHTML = "";
-  const levelIds = state.config.levels.map((l) => l.id);
-  state.courseLevel = levelIds.includes(state.assessedLevel) ? state.assessedLevel : state.config.levels[0].id;
-  state.config.levels.forEach((lvl) => {
+  // Profs réservés aux grands débutants (ex: Sophie) : un seul niveau proposé.
+  const courseLvls = c.beginner_only
+    ? state.config.levels.filter((l) => l.id === "beginner")
+    : state.config.levels;
+  const levelIds = courseLvls.map((l) => l.id);
+  state.courseLevel = levelIds.includes(state.assessedLevel) ? state.assessedLevel : courseLvls[0].id;
+  courseLvls.forEach((lvl) => {
     const pill = document.createElement("button");
     pill.className = "pill" + (lvl.id === state.courseLevel ? " selected" : "");
     pill.textContent = lvl.label;

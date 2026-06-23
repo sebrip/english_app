@@ -56,6 +56,20 @@ DECORS = {
         "warm inviting daylight, calm and friendly atmosphere. No people, no readable "
         "text, no watermark."
     ),
+    "school": (
+        "Wide photorealistic bright and friendly primary-school classroom: small wooden "
+        "desks and colorful little chairs, a large green chalkboard, cheerful educational "
+        "posters on the walls, shelves with books and supplies, big windows with warm "
+        "daylight, a few green plants, welcoming and cozy atmosphere. No people, no "
+        "readable text, no watermark."
+    ),
+    "supermarket": (
+        "Wide photorealistic interior of a modern bright supermarket: long well-stocked "
+        "aisles with colorful shelves of groceries, a glossy clean floor, bright overhead "
+        "lighting, a softly blurred fresh-produce section in the distance, inviting "
+        "everyday atmosphere. No people, no readable text, no signs with letters, no "
+        "watermark."
+    ),
 }
 
 

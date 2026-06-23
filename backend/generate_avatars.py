@@ -78,6 +78,21 @@ PORTRAITS = {
         "softly-blurred warm neutral background, centered, looking at camera, high detail, "
         "natural skin texture."
     ),
+    "sophie": (
+        "Photorealistic professional headshot portrait of a warm, kind 35-year-old French "
+        "woman, a primary-school teacher ('maîtresse d'école'). Soft brown hair in a neat "
+        "everyday style, gentle reassuring smile, light natural makeup, a tasteful blouse "
+        "and light cardigan. She looks patient, caring and approachable, like a beloved "
+        "schoolteacher. Soft studio lighting, clean softly-blurred warm neutral background, "
+        "centered, looking at camera, high detail, natural skin texture."
+    ),
+    "kai": (
+        "Photorealistic professional headshot portrait of an upbeat 19-year-old Californian "
+        "young man, a gamer and streamer. Trendy modern haircut, casual hoodie with colorful "
+        "gaming headphones around his neck, big energetic grin, youthful confident vibe. Soft "
+        "studio lighting with a subtle cool RGB accent glow, clean softly-blurred neutral "
+        "background, centered, looking at camera, high detail, natural skin texture."
+    ),
 }
 
 
