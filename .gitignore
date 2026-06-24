@@ -42,6 +42,8 @@ demo_video/slides_raw/
 demo_video/slides_final/
 demo_video/__pycache__/
 demo_video/music.wav
+demo_video/music_*.wav
+demo_video/music_*.mp3
 demo_video/check_mobile.png
 
 # --- OS / éditeurs ---

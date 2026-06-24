@@ -8,6 +8,8 @@ file 'slides_final/04-partenaires.png'
 duration 5.0
 file 'slides_final/05-reglages.png'
 duration 5.0
+file 'slides_final/05b-debutant.png'
+duration 5.0
 file 'slides_final/06-conversation.png'
 duration 5.0
 file 'slides_final/07-bilan.png'

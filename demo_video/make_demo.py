@@ -16,6 +16,7 @@ jamais à data/progress.json.
 """
 
 import math
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -30,7 +31,7 @@ FINAL = ROOT / "slides_final"  # canevas 1920x1080 sous-titrés
 RAW.mkdir(exist_ok=True)
 FINAL.mkdir(exist_ok=True)
 
-BASE = "http://127.0.0.1:8000/"
+BASE = os.environ.get("DEMO_BASE", "http://127.0.0.1:8000/")
 W, H = 1920, 1080
 IMG_ZONE_H = 920          # hauteur réservée à la capture (le reste = sous-titre)
 BG = (10, 12, 24)          # #0a0c18, le fond de l'app
@@ -104,6 +105,20 @@ def sc_setup(page):
         pills.nth(1).click()
     page.click("#decor-cards .decor-card")
     page.wait_for_timeout(400)
+
+
+def sc_debutant(page):
+    """Sophie, la maîtresse francophone pour grands débutants (carte verte, niveau verrouillé)."""
+    activate(page, "menu")
+    page.click("#mode-free")
+    page.wait_for_selector("#character-cards .char-card")
+    page.evaluate("""() => {
+      const cards = [...document.querySelectorAll('#character-cards .char-card')];
+      const s = cards.find(c => c.querySelector('.char-name')?.textContent.trim() === 'Sophie');
+      if (s) s.click();
+    }""")
+    page.wait_for_selector("#decor-cards .decor-card")
+    page.wait_for_timeout(500)
 
 
 def sc_call(page):
@@ -409,13 +424,14 @@ def sc_errorbook(page):
 SCENES = [
     ("02-menu", "L'écran d'accueil propose trois modes : conversation libre, cours d'anglais et mini-jeux.", sc_menu),
     ("03-profil", "Le profil : niveau, points d'expérience, série de jours et badges à débloquer.", sc_profile),
-    ("04-partenaires", "En conversation libre, choisissez votre partenaire : chaque personnage a sa voix et son caractère.", sc_free_home),
-    ("05-reglages", "Réglez votre niveau, puis choisissez le décor : restaurant, aéroport, entretien d'embauche...", sc_setup),
+    ("04-partenaires", "En conversation libre, choisissez votre partenaire : six personnages, chacun sa voix et son caractère — du professeur de Boston au jeune gamer californien.", sc_free_home),
+    ("05-reglages", "Réglez votre niveau, puis choisissez le décor : restaurant, aéroport, entretien... et désormais l'école ou le supermarché.", sc_setup),
+    ("05b-debutant", "Nouveau : Sophie, la maîtresse d'école francophone pour les grands débutants — elle explique en français et ne propose que le niveau « Débutant ».", sc_debutant),
     ("06-conversation", "Parlez en temps réel, à la voix, avec sous-titres en direct — comme un vrai appel.", sc_call),
     ("07-bilan", "À la fin, un bilan complet : note sur 10, points forts et axes d'amélioration.", sc_summary),
     ("07b-cadeau", "Décrochez 9/10 ou plus, et un cadeau apparaît sur l'accueil : un invité surprise vous attend !", sc_gift),
     ("07c-raj", "C'est Raj, le correspondant indien ! Une conversation bonus au pub — il disparaît après l'avoir rencontré.", sc_raj),
-    ("08-cours", "Le mode Cours : de vrais professeurs qui suivent votre progression... et un surnom à gagner !", sc_course_home),
+    ("08-cours", "Le mode Cours : des professeurs spécialisés, repérables à leur couleur — débutants, vocabulaire, examinateur — qui suivent votre progression.", sc_course_home),
     ("09-cours-reglages", "Choisissez le niveau et la durée : l'application reprend là où vous vous étiez arrêté.", sc_course_setup),
     ("10-lecon", "Pendant la leçon, un chrono guide la séance ; vous validez quand l'objectif est atteint.", sc_lesson),
     ("11-lecon-bilan", "Chaque leçon est évaluée : note, acquis, vocabulaire du jour... et parfois un nouveau surnom.", sc_lesson_summary),
