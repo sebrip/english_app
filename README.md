@@ -24,6 +24,8 @@ de toi, et mini-jeux de vocabulaire — le tout dans une PWA installable.
 
 > *(Astuce : sur GitHub la vidéo se télécharge. Pour une lecture en ligne, voir le lien de démo de mon portfolio.)*
 
+> 🎼 Musique de la vidéo : **[HoliznaCC0](https://freemusicarchive.org/music/holiznacc0/)** — domaine public (CC0).
+
 ---
 
 ## ✨ Fonctionnalités
